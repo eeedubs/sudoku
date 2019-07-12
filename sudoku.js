@@ -28,7 +28,7 @@ function sudoku(puzzle) {
   
   //   returns the values on the same vertical line greater than 0
   let getY = (col) => {
-    return JSON.parse(JSON.stringify(puzzle)).map((row) => { return row[col] }).sort((a, b) => { return a - b }).filter(a => a > 0)
+    return puzzle.map((row) => { return row[col] }).sort((a, b) => { return a - b }).filter(a => a > 0)
   }
 
   //   returns the horizontal and vertical values that are in-line with a given axis point
