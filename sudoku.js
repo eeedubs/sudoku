@@ -1,9 +1,4 @@
 function sudoku(puzzle) {
-  // deep clones the input grid
-  let getNewPuzzle = () => {
-    return JSON.parse(JSON.stringify(puzzle))
-  }
-
   // returns the minimum row or column number for a 3x3 grid, given an axis
   let minCalc = (axis) => {
     if (axis >= 6){
@@ -15,30 +10,30 @@ function sudoku(puzzle) {
   }
   
   // returns the values in the same 3x3 grid
-  let threeGridValues = (row, col, puz) => {
+  let threeGridValues = (row, col) => {
     let rowMin = minCalc(row)
     let colMin = minCalc(col)
-    let firstRow = [puz[rowMin][colMin], puz[rowMin][colMin + 1], puz[rowMin][colMin + 2]]
-    let secondRow = [puz[rowMin + 1][colMin], puz[rowMin + 1][colMin + 1], puz[rowMin + 1][colMin + 2]]
-    let thirdRow = [puz[rowMin + 2][colMin], puz[rowMin + 2][colMin + 1], puz[rowMin + 2][colMin + 2]]
+    let firstRow = [puzzle[rowMin][colMin], puzzle[rowMin][colMin + 1], puzzle[rowMin][colMin + 2]]
+    let secondRow = [puzzle[rowMin + 1][colMin], puzzle[rowMin + 1][colMin + 1], puzzle[rowMin + 1][colMin + 2]]
+    let thirdRow = [puzzle[rowMin + 2][colMin], puzzle[rowMin + 2][colMin + 1], puzzle[rowMin + 2][colMin + 2]]
     let grid = [firstRow, secondRow, thirdRow]
     return grid.concat.apply([], grid).filter(a => a > 0).sort((a, b) => { return a - b })
   }
   
   
   //   returns the values on the same horizontal line greater than 0
-  let getX = (row, puz) => {
-    return JSON.parse(JSON.stringify(puz))[row].sort((a, b) => { return a - b }).filter(a => a > 0);
+  let getX = (row) => {
+    return JSON.parse(JSON.stringify(puzzle))[row].sort((a, b) => { return a - b }).filter(a => a > 0);
   }
   
   //   returns the values on the same vertical line greater than 0
-  let getY = (col, puz) => {
-    return JSON.parse(JSON.stringify(puz)).map((row) => { return row[col] }).sort((a, b) => { return a - b }).filter(a => a > 0)
+  let getY = (col) => {
+    return JSON.parse(JSON.stringify(puzzle)).map((row) => { return row[col] }).sort((a, b) => { return a - b }).filter(a => a > 0)
   }
 
   //   returns the horizontal and vertical values that are in-line with a given axis point
-  let crossValues = (x, y, puz) => {
-    return getX(x, puz).concat(getY(y, puz)).filter(a => a > 0).sort((a, b) => { return a - b })
+  let crossValues = (x, y) => {
+    return getX(x).concat(getY(y)).filter(a => a > 0).sort((a, b) => { return a - b })
   }
 
   //   returns the remaining numbers available after filtering out cross numbers 
@@ -48,28 +43,28 @@ function sudoku(puzzle) {
   }
 
   // solves the sudoku puzzle
-  let solve = (puz) => {
-    for (let x = 0; x < puz.length; x++){
-      for (let y = 0; y < puz.length; y++){
-        if (getNewPuzzle()[x][y] === 0){
-          let gridNums = threeGridValues(x, y, puz)
-          let crossVals = crossValues(x, y, puz)
+  let solve = (puzzle) => {
+    for (let x = 0; x < puzzle.length; x++){
+      for (let y = 0; y < puzzle.length; y++){
+        if (puzzle[x][y] === 0){
+          let gridNums = threeGridValues(x, y)
+          let crossVals = crossValues(x, y)
           let potentialNumbers = remainingNumbers(gridNums, crossVals);
           if (potentialNumbers.length === 1){
-            puz[x][y] = potentialNumbers[0];
+            puzzle[x][y] = potentialNumbers[0];
           }
         }
       }
     }
-    for (let z = 0; z < puz.length; z++){
-      if (puz[z].includes(0)){
-        return solve(puz) 
+    for (let z = 0; z < puzzle.length; z++){
+      if (puzzle[z].includes(0)){
+        return solve(puzzle) 
       }
     }
-    return puz;
+    return puzzle;
   }
 
-  return solve(getNewPuzzle())
+  return solve(puzzle)
 }
 
 let puzzle = [
