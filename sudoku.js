@@ -1,8 +1,10 @@
 function sudoku(puzzle) {
+  // deep clones the input grid
   let getNewPuzzle = () => {
     return JSON.parse(JSON.stringify(puzzle))
   }
 
+  // returns the minimum row or column number for a 3x3 grid, given an axis
   let minCalc = (axis) => {
     if (axis >= 6){
       return 6
@@ -12,6 +14,7 @@ function sudoku(puzzle) {
     return 0
   }
   
+  // returns the values in the same 3x3 grid
   let threeGridValues = (row, col, puz) => {
     let rowMin = minCalc(row)
     let colMin = minCalc(col)
@@ -33,22 +36,25 @@ function sudoku(puzzle) {
     return JSON.parse(JSON.stringify(puz)).map((row) => { return row[col] }).sort((a, b) => { return a - b }).filter(a => a > 0)
   }
 
+  //   returns the horizontal and vertical values that are in-line with a given axis point
   let crossValues = (x, y, puz) => {
     return getX(x, puz).concat(getY(y, puz)).filter(a => a > 0).sort((a, b) => { return a - b })
   }
 
-  let remainingGridNumbers = (gridNums, crossVals) => {
+  //   returns the remaining numbers available after filtering out cross numbers 
+  //   and numbers from the same grid
+  let remainingNumbers = (gridNums, crossVals) => {
     return [1, 2, 3, 4, 5, 6, 7, 8, 9].filter(val => !gridNums.includes(val) && !crossVals.includes(val));
   }
 
-  let runGrid = (puz) => {
+  // solves the sudoku puzzle
+  let solve = (puz) => {
     for (let x = 0; x < puz.length; x++){
       for (let y = 0; y < puz.length; y++){
         if (getNewPuzzle()[x][y] === 0){
-          let minRow = minCalc(x), minCol = minCalc(y);
-          let gridNums = threeGridValues(minRow, minCol, puz)
+          let gridNums = threeGridValues(x, y, puz)
           let crossVals = crossValues(x, y, puz)
-          let potentialNumbers = remainingGridNumbers(gridNums, crossVals);
+          let potentialNumbers = remainingNumbers(gridNums, crossVals);
           if (potentialNumbers.length === 1){
             puz[x][y] = potentialNumbers[0];
           }
@@ -57,13 +63,13 @@ function sudoku(puzzle) {
     }
     for (let z = 0; z < puz.length; z++){
       if (puz[z].includes(0)){
-        return runGrid(puz) 
+        return solve(puz) 
       }
     }
     return puz;
   }
 
-  return runGrid(getNewPuzzle())
+  return solve(getNewPuzzle())
 }
 
 let puzzle = [
